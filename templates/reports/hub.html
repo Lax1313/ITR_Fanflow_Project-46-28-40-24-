@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Reports - FanFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-3">Reports</h4>
+<div class="row g-3">
+    <div class="col-md-4"><div class="card p-3">
+        <h6>Inventory Report</h6>
+        <a href="{% url 'reports:inventory_csv' %}" class="btn btn-sm btn-outline-dark me-1">CSV</a>
+        <a href="{% url 'reports:inventory_pdf' %}" class="btn btn-sm btn-outline-dark">PDF</a>
+    </div></div>
+    <div class="col-md-4"><div class="card p-3">
+        <h6>Supplier Performance Report</h6>
+        <a href="{% url 'reports:suppliers_csv' %}" class="btn btn-sm btn-outline-dark">CSV</a>
+    </div></div>
+    <div class="col-md-4"><div class="card p-3">
+        <h6>Orders Report</h6>
+        <a href="{% url 'reports:orders_csv' %}" class="btn btn-sm btn-outline-dark">CSV</a>
+    </div></div>
+    <div class="col-md-4"><div class="card p-3">
+        <h6>Demand Forecast Report</h6>
+        <a href="{% url 'reports:forecast_csv' %}" class="btn btn-sm btn-outline-dark">CSV</a>
+    </div></div>
+    <div class="col-md-4"><div class="card p-3">
+        <h6>Risk Report</h6>
+        <a href="{% url 'reports:risk_csv' %}" class="btn btn-sm btn-outline-dark">CSV</a>
+    </div></div>
+</div>
+{% endblock %}

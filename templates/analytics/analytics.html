@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Analytics - FanFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-1">Analytics & Business Intelligence</h4>
+<p class="text-muted mb-4">Deeper view of the same live data used on the Dashboard.</p>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card p-3"><h6>Demand Forecast</h6><canvas id="chartDemandForecast" height="200"></canvas></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3"><h6>Inventory Status</h6><canvas id="chartInventoryStatus" height="200"></canvas></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3"><h6>Supplier Performance</h6><canvas id="chartSupplierPerformance" height="200"></canvas></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3"><h6>Procurement Cost by Supplier</h6><canvas id="chartProcurementCost" height="200"></canvas></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const demandForecast = {{ charts.demand_forecast|safe }};
+const inventoryStatus = {{ charts.inventory_status|safe }};
+const supplierPerformance = {{ charts.supplier_performance|safe }};
+const procurementCost = {{ charts.procurement_cost|safe }};
+
+window.fanflowChartBuilders = {
+    demandForecast: function (c) {
+        return new Chart(document.getElementById('chartDemandForecast'), {
+            type: 'line',
+            data: { labels: demandForecast.labels, datasets: [{ label: 'Predicted Quantity', data: demandForecast.data, borderColor: c.accent, backgroundColor: c.accent + '26', tension: 0.3, fill: true }] },
+            options: { plugins: { legend: { labels: { color: c.text } } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid } } } }
+        });
+    },
+    inventoryStatus: function (c) {
+        return new Chart(document.getElementById('chartInventoryStatus'), {
+            type: 'bar',
+            data: { labels: inventoryStatus.labels, datasets: [
+                { label: 'Available', data: inventoryStatus.available, backgroundColor: c.success },
+                { label: 'Reorder Level', data: inventoryStatus.reorder_level, backgroundColor: c.danger }
+            ]},
+            options: { plugins: { legend: { labels: { color: c.text } } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid } } } }
+        });
+    },
+    supplierPerformance: function (c) {
+        return new Chart(document.getElementById('chartSupplierPerformance'), {
+            type: 'radar',
+            data: { labels: supplierPerformance.labels, datasets: [
+                { label: 'Quality', data: supplierPerformance.quality, borderColor: c.accent, backgroundColor: c.accent + '33' },
+                { label: 'Reliability', data: supplierPerformance.reliability, borderColor: c.info, backgroundColor: c.info + '33' }
+            ]},
+            options: { plugins: { legend: { labels: { color: c.text } } }, scales: { r: { ticks: { color: c.text, backdropColor: 'transparent' }, grid: { color: c.grid }, pointLabels: { color: c.text } } } }
+        });
+    },
+    procurementCost: function (c) {
+        return new Chart(document.getElementById('chartProcurementCost'), {
+            type: 'bar',
+            data: { labels: procurementCost.labels, datasets: [{ label: 'Cost', data: procurementCost.data, backgroundColor: c.accent }] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid } } } }
+        });
+    }
+};
+
+Object.keys(window.fanflowChartBuilders).forEach(function (key) {
+    fanflowRegisterChart(key, window.fanflowChartBuilders[key]);
+});
+</script>
+{% endblock %}

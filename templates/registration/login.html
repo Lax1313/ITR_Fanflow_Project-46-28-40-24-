@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login - FanFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
+
+        <div class="text-center mb-3">
+
+            <!-- FanFlow Logo -->
+            <img
+                src="{% static 'images/fanflow_logo_v2.png' %}"
+                alt="FanFlow Logo"
+                style="height: 100px; width: auto; object-fit: contain;"
+            >
+
+            <p class="text-muted small">Sign in to continue</p>
+
+        </div>
+
+        {% if form.errors %}
+            <div class="alert alert-danger py-2 small">
+                Your username and password didn't match. Please try again.
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                {{ form.username }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100">
+                Login
+            </button>
+
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Forecasting - FanFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-1">Demand Forecasting</h4>
+<p class="text-muted mb-4">Compares Linear Regression vs Random Forest Regressor on Sales History, picks the best by MAE.</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6>1. Train the model</h6>
+            <p class="text-muted small">
+                Model status:
+                {% if model_trained %}<span class="badge text-bg-success">Trained</span>{% else %}<span class="badge text-bg-secondary">Not trained yet</span>{% endif %}
+            </p>
+            <form method="post" action="{% url 'forecasting:train' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-dark btn-sm">Train / retrain model</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6>2. Generate a forecast</h6>
+            <form method="post" action="{% url 'forecasting:run' %}">
+                {% csrf_token %}
+                <div class="mb-2">
+                    <label class="form-label small">Product</label>
+                    <select name="product_id" class="form-select form-select-sm">
+                        {% for p in products %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small">Days ahead</label>
+                    <input type="number" name="days_ahead" value="30" class="form-control form-control-sm">
+                </div>
+                <button type="submit" class="btn btn-dark btn-sm">Generate forecast</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Product</th><th>Forecast date</th><th>Predicted qty</th><th>Model</th><th>Confidence (R²)</th></tr></thead>
+            <tbody>
+                {% for f in forecasts %}
+                <tr><td>{{ f.product.name }}</td><td>{{ f.forecast_date }}</td><td>{{ f.predicted_quantity }}</td><td>{{ f.model_name }}</td><td>{{ f.confidence_score }}%</td></tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-4">No forecasts generated yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

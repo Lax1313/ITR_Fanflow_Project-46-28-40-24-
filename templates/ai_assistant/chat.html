@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}AI Assistant - FanFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-1"><i class="bi bi-robot"></i> Supply Chain AI Assistant</h4>
+<p class="text-muted">
+    Answers are grounded in your live database &mdash; every number comes from Django calculations, never invented.
+    {% if not llm_configured %}<span class="badge text-bg-secondary">Running in rule-based mode (no OPENAI_API_KEY set)</span>{% endif %}
+</p>
+
+<div class="card p-3 mb-3">
+    <form method="post">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" name="question" class="form-control" placeholder="e.g. Which material is most critical?" required>
+            <button type="submit" class="btn btn-dark">Ask</button>
+        </div>
+    </form>
+    <div class="mt-2 small text-muted">
+        Try: "Which material is most critical?" &middot; "Which supplier should we choose for motors?" &middot;
+        "What materials are short?" &middot; "What are the open risks?"
+    </div>
+</div>
+
+{% if response %}
+<div class="card p-3 mb-3 border-dark">
+    <h6><i class="bi bi-robot"></i> Response</h6>
+    <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ response }}</pre>
+</div>
+{% endif %}
+
+<div class="card p-3">
+    <h6>Recent questions</h6>
+    {% for q in history %}
+    <div class="border-bottom py-2">
+        <div class="fw-semibold small">{{ q.question }}</div>
+        <div class="text-muted small">{{ q.created_at|date:"d M Y H:i" }}</div>
+    </div>
+    {% empty %}
+    <p class="text-muted small mb-0">No questions asked yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

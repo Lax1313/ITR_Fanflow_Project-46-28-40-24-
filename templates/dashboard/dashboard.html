@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - FanFlow{% endblock %}
+
+{% block content %}
+<h3 class="mb-1">Welcome, {{ user.get_full_name|default:user.username }}</h3>
+<p class="text-muted mb-4">
+    Signed in as <span class="badge text-bg-dark">{{ user_role_display }}</span>
+    &middot; Fan Manufacturing Supply Chain Overview
+</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="card p-3 kpi-card"><div class="text-muted small">Total Orders</div><h2>{{ kpis.total_orders }}</h2></div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card p-3 kpi-card"><div class="text-muted small">Predicted Demand</div><h2>{{ kpis.predicted_demand }}</h2></div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card p-3 kpi-card"><div class="text-muted small">Inventory Value</div><h2>₹{{ kpis.inventory_value }}</h2></div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card p-3 kpi-card"><div class="text-muted small">Critical Materials</div><h2 class="{% if kpis.critical_materials > 0 %}text-danger{% endif %}">{{ kpis.critical_materials }}</h2></div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card p-3 kpi-card"><div class="text-muted small">Active Suppliers</div><h2>{{ kpis.active_suppliers }}</h2></div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card p-3 kpi-card"><div class="text-muted small">Pending Purchase Orders</div><h2>{{ kpis.pending_pos }}</h2></div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card p-3 kpi-card"><div class="text-muted small">Procurement Cost</div><h2>₹{{ kpis.procurement_cost }}</h2></div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card p-3 kpi-card"><div class="text-muted small">Supply Chain Risk</div><h2 class="{% if kpis.open_risks > 0 %}text-danger{% endif %}">{{ kpis.open_risks }} open</h2></div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 h-100">
+            <h6><i class="bi bi-graph-up-arrow"></i> Predicted Demand (next forecast)</h6>
+            <table class="table table-sm mb-0">
+                <tbody>
+                    {% for row in insights.predicted_demand %}
+                    <tr>
+                        <td>{{ row.product.name }}</td>
+                        <td class="text-end"><strong>{{ row.predicted_quantity }}</strong></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td class="text-muted small py-3">No forecasts yet. Train the model on the Forecasting page.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 h-100">
+            <h6><i class="bi bi-exclamation-circle text-danger"></i> Low Stock Alerts</h6>
+            <table class="table table-sm mb-0">
+                <tbody>
+                    {% for row in insights.low_stock %}
+                    <tr>
+                        <td>{{ row.material.name }}</td>
+                        <td class="text-end text-danger"><strong>-{{ row.deficit }}</strong></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td class="text-muted small py-3">Nothing below reorder level right now.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 h-100">
+            <h6><i class="bi bi-lightbulb text-warning"></i> Reorder Recommendations</h6>
+            <table class="table table-sm mb-0">
+                <tbody>
+                    {% for rec in insights.reorder_recommendations %}
+                    <tr>
+                        <td>{{ rec.material.name }}</td>
+                        <td class="text-end">{{ rec.recommended_quantity }} <span class="text-muted small">from {{ rec.recommended_supplier.name|default:"—" }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td class="text-muted small py-3">No reorders needed right now.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if insights.reorder_recommendations %}
+            <a href="{% url 'procurement:recommendations' %}" class="btn btn-sm btn-outline-dark mt-2">View all recommendations</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6>Demand Forecast</h6>
+            <canvas id="chartDemandForecast" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6>Inventory Status (Available vs Reorder Level)</h6>
+            <canvas id="chartInventoryStatus" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6>Supplier Performance</h6>
+            <canvas id="chartSupplierPerformance" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6>Procurement Cost by Supplier</h6>
+            <canvas id="chartProcurementCost" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6>Material Shortage</h6>
+            <canvas id="chartMaterialShortage" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h6>Logistics Status</h6>
+            <canvas id="chartLogisticsStatus" height="180"></canvas>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const demandForecast = {{ charts.demand_forecast|safe }};
+const inventoryStatus = {{ charts.inventory_status|safe }};
+const supplierPerformance = {{ charts.supplier_performance|safe }};
+const procurementCost = {{ charts.procurement_cost|safe }};
+const materialShortage = {{ charts.material_shortage|safe }};
+const logisticsStatus = {{ charts.logistics_status|safe }};
+
+window.fanflowChartBuilders = {
+    demandForecast: function (c) {
+        return new Chart(document.getElementById('chartDemandForecast'), {
+            type: 'line',
+            data: { labels: demandForecast.labels, datasets: [{ label: 'Predicted Quantity', data: demandForecast.data, borderColor: c.accent, backgroundColor: c.accent + '26', tension: 0.3, fill: true }] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid } } } }
+        });
+    },
+    inventoryStatus: function (c) {
+        return new Chart(document.getElementById('chartInventoryStatus'), {
+            type: 'bar',
+            data: { labels: inventoryStatus.labels, datasets: [
+                { label: 'Available', data: inventoryStatus.available, backgroundColor: c.success },
+                { label: 'Reorder Level', data: inventoryStatus.reorder_level, backgroundColor: c.danger }
+            ]},
+            options: { plugins: { legend: { labels: { color: c.text } } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid } } } }
+        });
+    },
+    supplierPerformance: function (c) {
+        return new Chart(document.getElementById('chartSupplierPerformance'), {
+            type: 'bar',
+            data: { labels: supplierPerformance.labels, datasets: [
+                { label: 'Quality', data: supplierPerformance.quality, backgroundColor: c.chart1 || c.accent },
+                { label: 'Reliability', data: supplierPerformance.reliability, backgroundColor: c.info }
+            ]},
+            options: { plugins: { legend: { labels: { color: c.text } } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid } } } }
+        });
+    },
+    procurementCost: function (c) {
+        return new Chart(document.getElementById('chartProcurementCost'), {
+            type: 'doughnut',
+            data: { labels: procurementCost.labels, datasets: [{ data: procurementCost.data, backgroundColor: c.palette }] },
+            options: { plugins: { legend: { labels: { color: c.text } } } }
+        });
+    },
+    materialShortage: function (c) {
+        return new Chart(document.getElementById('chartMaterialShortage'), {
+            type: 'bar',
+            data: { labels: materialShortage.labels, datasets: [{ label: 'Shortage', data: materialShortage.data, backgroundColor: c.danger }] },
+            options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: c.text }, grid: { color: c.grid } }, y: { ticks: { color: c.text }, grid: { color: c.grid } } } }
+        });
+    },
+    logisticsStatus: function (c) {
+        return new Chart(document.getElementById('chartLogisticsStatus'), {
+            type: 'pie',
+            data: { labels: logisticsStatus.labels, datasets: [{ data: logisticsStatus.data, backgroundColor: c.palette }] },
+            options: { plugins: { legend: { labels: { color: c.text } } } }
+        });
+    }
+};
+
+Object.keys(window.fanflowChartBuilders).forEach(function (key) {
+    fanflowRegisterChart(key, window.fanflowChartBuilders[key]);
+});
+</script>
+{% endblock %}

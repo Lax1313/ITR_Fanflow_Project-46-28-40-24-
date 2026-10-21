@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Notifications - FanFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-3">Notifications</h4>
+
+<div class="card p-3 mb-3">
+    <h6>Risk Alerts</h6>
+    {% for a in alerts %}
+    <div class="border-bottom py-2">
+        <span class="badge text-bg-{% if a.severity == 'CRITICAL' %}danger{% elif a.severity == 'HIGH' %}warning{% else %}secondary{% endif %}">{{ a.get_severity_display }}</span>
+        {{ a.title }}
+    </div>
+    {% empty %}<p class="text-muted small mb-0">No open risk alerts.</p>{% endfor %}
+</div>
+
+<div class="card p-3">
+    <h6>Low Stock Materials</h6>
+    {% for row in low_stock %}
+    <div class="border-bottom py-2">{{ row.material.name }}: {{ row.available }} available (reorder level {{ row.reorder_level }})</div>
+    {% empty %}<p class="text-muted small mb-0">No materials below reorder level.</p>{% endfor %}
+</div>
+{% endblock %}

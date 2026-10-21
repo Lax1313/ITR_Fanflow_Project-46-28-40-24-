@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}MRP Calculator - FanFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-1">Material Requirement Planning</h4>
+<p class="text-muted">Material Requirement = Production Quantity &times; BOM Quantity</p>
+
+<div class="card p-4 mb-4" style="max-width: 640px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-7 mb-3"><label class="form-label">{{ form.product.label }}</label>{{ form.product }}</div>
+            <div class="col-md-5 mb-3"><label class="form-label">{{ form.production_quantity.label }}</label>{{ form.production_quantity }}</div>
+        </div>
+        <button type="submit" class="btn btn-dark">Calculate</button>
+    </form>
+</div>
+
+{% if requirements is not None %}
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Material</th><th>Qty required</th><th>Available</th><th>Shortage</th></tr></thead>
+            <tbody>
+                {% for r in requirements %}
+                <tr class="{% if r.shortage > 0 %}table-danger{% endif %}">
+                    <td>{{ r.material.name }}</td>
+                    <td>{{ r.quantity_required }}</td>
+                    <td>{{ r.available }}</td>
+                    <td>{% if r.shortage > 0 %}<strong>{{ r.shortage }}</strong>{% else %}Sufficient{% endif %}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center text-muted py-4">This product has no active BOM yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

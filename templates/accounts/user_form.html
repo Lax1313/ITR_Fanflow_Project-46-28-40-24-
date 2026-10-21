@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'add' %}Add Employee{% else %}Edit {{ target_user.username }}{% endif %} - FanFlow{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'accounts:user_list' %}" class="text-decoration-none small">
+        <i class="bi bi-arrow-left"></i> Back to Users & Roles
+    </a>
+</div>
+
+<div class="card p-4" style="max-width: 560px;">
+    <h5 class="mb-3">
+        {% if mode == 'add' %}
+            Add a new employee
+        {% else %}
+            Edit {{ target_user.username }}
+        {% endif %}
+    </h5>
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-dark">
+            {% if mode == 'add' %}Create account{% else %}Save changes{% endif %}
+        </button>
+    </form>
+</div>
+{% endblock %}

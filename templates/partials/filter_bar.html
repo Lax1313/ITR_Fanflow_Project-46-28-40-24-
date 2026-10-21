@@ -1,0 +1,36 @@
+{% comment %}
+Reusable search + category filter bar (search input, dropdown, Filter
+button, Export CSV button). Include with:
+
+    {% include "partials/filter_bar.html" with search_placeholder="Search products..." category_label="Category" category_choices=categories export_url=export_url %}
+
+Expects in context:
+  - request.GET.q            (search text, auto-filled back in)
+  - request.GET.category     (selected category, auto-filled back in)
+  - category_choices         (list of category strings)
+  - export_url                (URL name string for the Export CSV link)
+  - search_placeholder        (placeholder text for the search box)
+{% endcomment %}
+<div class="filter-bar">
+    <form method="get" class="row g-3 align-items-end">
+        <div class="col-md-6">
+            <label>Search</label>
+            <input type="text" name="q" class="form-control" placeholder="{{ search_placeholder }}" value="{{ request.GET.q }}">
+        </div>
+        <div class="col-md-3">
+            <label>{{ category_label|default:"Category" }}</label>
+            <select name="category" class="form-select">
+                <option value="">All Categories</option>
+                {% for value, label in category_choices %}
+                <option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-filter flex-fill"><i class="bi bi-funnel"></i> Filter</button>
+            <a href="{% url export_url %}?q={{ request.GET.q }}&category={{ request.GET.category }}" class="btn btn-export flex-fill">
+                <i class="bi bi-download"></i> Export CSV
+            </a>
+        </div>
+    </form>
+</div>

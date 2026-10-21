@@ -1,0 +1,445 @@
+/* ============================================
+   FanFlow Theme System
+   Bottle Green + White Theme
+   ============================================ */
+
+:root {
+    /* =========================
+       Light Theme
+       Bottle Green + White
+       ========================= */
+
+    --bg-body: #f7faf8;
+    --bg-surface: #ffffff;
+
+    /* Main green areas */
+    --bg-navbar: #075b4f;
+    --bg-sidebar: #064f45;
+
+    /* Text */
+    --text-primary: #163d37;
+    --text-muted: #607772;
+
+    /* Borders */
+    --border-color: #d8e7e3;
+
+    /* Main accent */
+    --accent: #08705f;
+    --accent-hover: #055548;
+    --accent-soft: #e5f2ef;
+
+    /* Status */
+    --success: #198754;
+    --danger: #ef3f4f;
+    --warning: #e0a528;
+    --info: #2697b8;
+
+    /* =========================
+       Chart Palette
+       ========================= */
+
+    --chart-1: #08705f;
+    --chart-2: #0b8a74;
+    --chart-3: #49a995;
+    --chart-4: #075b4f;
+    --chart-5: #198754;
+    --chart-6: #ef3f4f;
+    --chart-7: #e0a528;
+    --chart-8: #91cfc3;
+}
+
+
+/* ============================================
+   Dark Theme
+   ============================================ */
+
+html[data-theme="dark"] {
+
+    --bg-body: #071c18;
+    --bg-surface: #0d2923;
+
+    --bg-navbar: #043d34;
+    --bg-sidebar: #052f29;
+
+    --text-primary: #e7f5f1;
+    --text-muted: #9bbab3;
+
+    --border-color: #1c4b42;
+
+    --accent: #39a991;
+    --accent-hover: #53bea7;
+    --accent-soft: #123d35;
+
+    --success: #42c79e;
+    --danger: #f36b76;
+    --warning: #f0bd55;
+    --info: #4bb5d2;
+
+    --chart-1: #39a991;
+    --chart-2: #53bea7;
+    --chart-3: #79cbbb;
+    --chart-4: #17816d;
+    --chart-5: #42c79e;
+    --chart-6: #f36b76;
+    --chart-7: #f0bd55;
+    --chart-8: #286257;
+}
+
+
+/* ============================================
+   BODY
+   ============================================ */
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+
+.navbar {
+    background-color: var(--bg-navbar) !important;
+}
+
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+
+.sidebar {
+    background-color: var(--bg-sidebar) !important;
+    border-color: var(--border-color) !important;
+}
+
+.sidebar .nav-link {
+    color: #ffffff;
+    padding: 0.55rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+.sidebar .nav-link.disabled {
+    color: var(--text-muted) !important;
+}
+
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.card {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+
+    border: 1px solid var(--border-color);
+
+    box-shadow:
+        0 1px 4px rgba(6, 79, 69, 0.08);
+
+    border-radius: 10px;
+}
+
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+.table {
+    color: var(--text-primary);
+}
+
+.table-light,
+.table > :not(caption) > * > * {
+    background-color: transparent;
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+
+/* ============================================
+   MUTED TEXT
+   ============================================ */
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+
+/* ============================================
+   DARK BUTTON
+   ============================================ */
+
+.btn-dark {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-dark:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+
+/* ============================================
+   OUTLINE BUTTON
+   ============================================ */
+
+.btn-outline-dark {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-outline-dark:hover {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+}
+
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.badge.text-bg-dark {
+    background-color: var(--accent) !important;
+}
+
+
+/* ============================================
+   KPI CARDS
+   ============================================ */
+
+.kpi-card h2 {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+
+/* ============================================
+   THEME TOGGLE
+   ============================================ */
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    background: transparent;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+
+    color: #ffffff;
+
+    border-radius: 20px;
+
+    padding: 4px 12px;
+
+    font-size: 0.85rem;
+
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+
+/* ============================================
+   DJANGO AUTH FORM INPUTS
+   ============================================ */
+
+form input[type="text"],
+form input[type="password"],
+form input[type="email"],
+form input[type="number"] {
+
+    display: block;
+
+    width: 100%;
+
+    padding: 0.375rem 0.75rem;
+
+    border: 1px solid var(--border-color);
+
+    border-radius: 0.375rem;
+
+    background-color: var(--bg-surface);
+
+    color: var(--text-primary);
+}
+
+
+/* ============================================
+   FORM CONTROLS
+   ============================================ */
+
+.form-control,
+.form-select {
+
+    background-color: var(--bg-surface);
+
+    color: var(--text-primary);
+
+    border-color: var(--border-color);
+}
+
+.form-control:focus,
+.form-select:focus {
+
+    border-color: var(--accent);
+
+    box-shadow:
+        0 0 0 0.2rem var(--accent-soft);
+
+    background-color: var(--bg-surface);
+
+    color: var(--text-primary);
+}
+
+
+/* ============================================
+   SEARCH / FILTER BAR
+   ============================================ */
+
+.filter-bar {
+
+    background-color: var(--bg-surface);
+
+    border: 1px solid var(--border-color);
+
+    border-radius: 12px;
+
+    padding: 1rem 1.25rem;
+
+    margin-bottom: 1rem;
+}
+
+.filter-bar label {
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    color: var(--text-muted);
+
+    margin-bottom: 0.3rem;
+
+    display: block;
+}
+
+.filter-bar .form-control,
+.filter-bar .form-select {
+
+    border-color: var(--border-color);
+}
+
+.filter-bar .form-control:focus {
+
+    border-color: var(--accent);
+}
+
+
+/* ============================================
+   FILTER BUTTON
+   ============================================ */
+
+.btn-filter {
+
+    background-color: var(--accent);
+
+    border-color: var(--accent);
+
+    color: #ffffff;
+
+    font-weight: 500;
+}
+
+.btn-filter:hover {
+
+    background-color: var(--accent-hover);
+
+    border-color: var(--accent-hover);
+
+    color: #ffffff;
+}
+
+
+/* ============================================
+   EXPORT BUTTON
+   ============================================ */
+
+.btn-export {
+
+    background-color: var(--bg-surface);
+
+    border: 1px solid var(--border-color);
+
+    color: var(--text-primary);
+
+    font-weight: 500;
+}
+
+.btn-export:hover {
+
+    background-color: var(--accent-soft);
+
+    border-color: var(--accent);
+
+    color: var(--accent);
+}
+
+
+/* ============================================
+   GENERAL LINKS
+   ============================================ */
+
+a {
+    color: var(--accent);
+}
+
+a:hover {
+    color: var(--accent-hover);
+}
+
+
+/* ============================================
+   ALERTS / STATUS COLORS
+   ============================================ */
+
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.text-warning {
+    color: var(--warning) !important;
+}
+
+.text-info {
+    color: var(--info) !important;
+}
+
+
+/* ============================================
+   SELECTION
+   ============================================ */
+
+::selection {
+    background-color: var(--accent);
+    color: #ffffff;
+}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Shipment #{{ shipment.id }} - FanFlow{% endblock %}
+
+{% block content %}
+<div class="mb-3"><a href="{% url 'logistics:list' %}" class="text-decoration-none small"><i class="bi bi-arrow-left"></i> Back to Logistics</a></div>
+<h4>Shipment #{{ shipment.id }}</h4>
+<div class="card p-4" style="max-width:600px;">
+    <table class="table table-borderless mb-0">
+        <tr><th>Supplier</th><td>{{ shipment.supplier.name }}</td></tr>
+        <tr><th>Origin</th><td>{{ shipment.origin }}</td></tr>
+        <tr><th>Destination</th><td>{{ shipment.destination }}</td></tr>
+        <tr><th>Mode</th><td>{{ shipment.get_transport_mode_display }}</td></tr>
+        <tr><th>Quantity</th><td>{{ shipment.quantity }}</td></tr>
+        <tr><th>Transportation cost</th><td>₹{{ shipment.transportation_cost }}</td></tr>
+        <tr><th>Status</th><td>{{ shipment.get_status_display }}</td></tr>
+        <tr><th>Expected arrival</th><td>{{ shipment.expected_arrival }}</td></tr>
+    </table>
+</div>
+{% endblock %}

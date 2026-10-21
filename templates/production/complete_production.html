@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Complete Production - FanFlow{% endblock %}
+
+{% block content %}
+<h4 class="mb-1">Complete Production</h4>
+<p class="text-muted">Mark a manufacturing run as finished &mdash; every material it used is deducted from inventory automatically, and stock is re-checked for new shortages immediately.</p>
+
+<div class="card p-4 mb-4" style="max-width: 640px;">
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6 mb-3"><label class="form-label">{{ form.product.label }}</label>{{ form.product }}</div>
+            <div class="col-md-3 mb-3"><label class="form-label">{{ form.quantity_produced.label }}</label>{{ form.quantity_produced }}</div>
+            <div class="col-md-3 mb-3"><label class="form-label">{{ form.reference.label }}</label>{{ form.reference }}</div>
+        </div>
+        <button type="submit" class="btn btn-dark"><i class="bi bi-check2-circle"></i> Mark as Completed</button>
+    </form>
+</div>
+
+{% if result %}
+<div class="card p-3 mb-3">
+    <h6><i class="bi bi-box-seam"></i> {{ result.quantity }} &times; {{ result.product.name }} &mdash; materials deducted</h6>
+    <table class="table table-sm">
+        <thead><tr><th>Material</th><th>Deducted</th><th>Remaining available</th><th>Reorder level</th><th>Status</th></tr></thead>
+        <tbody>
+            {% for row in result.deducted %}
+            <tr class="{% if row.now_short %}table-danger{% endif %}">
+                <td>{{ row.material.name }}</td>
+                <td>-{{ row.quantity_deducted }}</td>
+                <td>{{ row.remaining_available }}</td>
+                <td>{{ row.reorder_level }}</td>
+                <td>{% if row.now_short %}<span class="badge text-bg-danger">Now below reorder</span>{% else %}<span class="badge text-bg-success">OK</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card p-3">
+    <h6><i class="bi bi-exclamation-triangle"></i> New risk alerts raised by this run</h6>
+    {% if result.new_alerts %}
+        {% for alert in result.new_alerts %}
+        <div class="border-bottom py-2">
+            <span class="badge text-bg-{% if alert.severity == 'CRITICAL' %}danger{% elif alert.severity == 'HIGH' %}warning{% else %}secondary{% endif %}">{{ alert.get_severity_display }}</span>
+            {{ alert.title }}
+            <div class="text-muted small">{{ alert.description }}</div>
+        </div>
+        {% endfor %}
+        <a href="{% url 'risk_management:list' %}" class="btn btn-sm btn-outline-dark mt-2">View all risk alerts</a>
+    {% else %}
+        <p class="text-muted small mb-0">No new risks &mdash; every material used stayed above its safety stock.</p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
